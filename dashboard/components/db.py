@@ -15,7 +15,7 @@ def top_10_products_by_revenue():
     """)
     data = curr.fetchall()
     curr.close()
-   
+    con.close()
     return data
 
 
@@ -34,7 +34,7 @@ def revenue_per_month_last_12_months():
     """)
     data = curr.fetchall()
     curr.close()
-  
+    con.close()
     return data
 
 
@@ -51,7 +51,7 @@ def top_revenue_category():
     """)
     data = curr.fetchall()
     curr.close()
-   
+    con.close()
     return data
 
 
@@ -70,7 +70,7 @@ def average_order_value():
     """)
     data = curr.fetchall()
     curr.close()
-  
+    con.close()
     return data
 
 
@@ -90,8 +90,7 @@ def top_revenue_region():
     """)
     data = curr.fetchall()
     curr.close()
-
-
+    con.close()
     return data
 
 
@@ -108,7 +107,7 @@ def pct_cancelled_vs_delivered():
     """)
     data = curr.fetchall()
     curr.close()
-  
+    con.close()
     return data
 
 
@@ -135,7 +134,7 @@ def rolling_7_30_day_sales_per_product():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -165,7 +164,7 @@ def top_selling_product_per_month_last_12_months():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -184,7 +183,7 @@ def highest_order_volume_day_of_week():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -205,11 +204,10 @@ def highest_revenue_quarter():
     """)
     data = curr.fetchall()
     curr.close()
+    con.close()
     return data
 
 def stock_level_per_product_per_warehouse():
-    # Return raw inventory rows per product / warehouse. No GROUP BY needed
-    # because inventory rows are already per (product, warehouse).
     con = get_connection()
     curr = con.cursor()
     curr.execute("""
@@ -222,17 +220,10 @@ def stock_level_per_product_per_warehouse():
     data = curr.fetchall()
     curr.close()
     con.close()
-
     return data
 
 
 def inventory_list(where_clause=None, params=()):
-    """Generic inventory listing used by several inventory helper functions.
-
-    where_clause: optional SQL condition (string, WITHOUT the 'WHERE' keyword)
-    params: tuple of parameters for the query
-    Returns: list of tuples (product_name, warehouse_name, stock_level)
-    """
     con = get_connection()
     curr = con.cursor()
     base_sql = """
@@ -273,7 +264,7 @@ def count_low_stock_products(threshold=50):
     """, (threshold,))
     data = curr.fetchone()
     curr.close()
-
+    con.close()
     return data[0] if data else 0
 
 
@@ -287,7 +278,7 @@ def count_out_of_stock_products():
     """)
     data = curr.fetchone()
     curr.close()
-
+    con.close()
     return data[0] if data else 0
 
 
@@ -306,7 +297,7 @@ def worst_on_time_delivery_rate_per_supplier():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -326,7 +317,7 @@ def not_restocked_in_last_30_days():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -359,7 +350,7 @@ def overstocked_products():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -391,7 +382,7 @@ def stock_turnover_rate_per_product():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -413,7 +404,7 @@ def days_until_stockout():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -431,7 +422,7 @@ def discontinued_with_remaining_stock():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -451,7 +442,7 @@ def orders_fulfilled_per_warehouse():
     """)
     data = curr.fetchall()
     curr.close()
-  
+    con.close()
     return data
 
 
@@ -490,7 +481,7 @@ def warehouse_highest_stockout_frequency():
     """)
     data = curr.fetchall()
     curr.close()
-   
+    con.close()
     return data
 
 
@@ -519,7 +510,7 @@ def warehouse_most_dead_stock():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -537,7 +528,7 @@ def stock_level_comparison_across_warehouses():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -555,7 +546,7 @@ def warehouse_fastest_fulfillment():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -573,7 +564,7 @@ def on_time_delivery_rate_per_supplier():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -591,7 +582,7 @@ def average_delay_days_per_supplier():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -607,7 +598,7 @@ def supplier_most_delayed_deliveries():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -632,7 +623,7 @@ def products_relying_on_least_reliable_suppliers():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -657,7 +648,7 @@ def supplier_on_time_rate_trend_last_6_months():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -675,7 +666,7 @@ def supplier_highest_total_quantity_delivered():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 def top_20_customers_by_spend():
@@ -694,7 +685,7 @@ def top_20_customers_by_spend():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -718,7 +709,7 @@ def region_highest_avg_order_value():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -732,7 +723,7 @@ def new_customers_last_month():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -750,7 +741,7 @@ def one_time_customers():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -783,7 +774,7 @@ def order_frequency_distribution():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -799,7 +790,7 @@ def profit_margin_per_product():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -816,7 +807,7 @@ def category_highest_avg_profit_margin():
     """)
     data = curr.fetchall()
     curr.close()
-
+    con.close()
     return data
 
 
@@ -832,6 +823,7 @@ def products_never_ordered():
     """)
     data = curr.fetchall()
     curr.close()
+    con.close()
     return data
 
 
@@ -858,5 +850,5 @@ def product_rank_by_revenue_within_category():
     """)
     data = curr.fetchall()
     curr.close()
-  
+    con.close()
     return data

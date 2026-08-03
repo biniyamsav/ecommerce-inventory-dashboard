@@ -1,5 +1,6 @@
 from components.connection import get_connection
 
+
 def top_10_products_by_revenue():
     con = get_connection()
     curr = con.cursor()
@@ -847,6 +848,28 @@ def product_rank_by_revenue_within_category():
                RANK() OVER (PARTITION BY category ORDER BY total_revenue DESC) AS revenue_rank
         FROM product_revenue
         ORDER BY category, revenue_rank;
+    """)
+    data = curr.fetchall()
+    curr.close()
+    con.close()
+    return data
+
+
+def product_weekly_sales():
+    con = get_connection()
+    curr = con.cursor()
+    curr.execute("""
+        SELECT 
+    p.id AS product_id,
+    p.name,
+    DATE_TRUNC('week', o.order_date) AS week_start,
+    SUM(oi.quantity) AS total_quantity,
+    SUM(oi.quantity * p.unit_cost) AS total_paid
+    FROM products p
+    LEFT JOIN order_items oi ON p.id = oi.product_id
+    LEFT JOIN orders o ON o.id = oi.order_id
+    GROUP BY p.id, p.name, DATE_TRUNC('week', o.order_date)
+    ORDER BY p.name, week_start;
     """)
     data = curr.fetchall()
     curr.close()

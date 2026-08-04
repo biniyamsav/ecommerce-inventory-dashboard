@@ -409,6 +409,84 @@ def days_until_stockout():
     return data
 
 
+def stockout_and_predicted_income():
+    """
+    Returns rows with product_name, days_remaining (rounded to 1), stockout_risk (1/0),
+    and predicted_income (estimated revenue over the days_remaining window).
+    """
+    con = get_connection()
+    curr = con.cursor()
+    curr.execute("""
+        WITH inventory_summary AS (
+            SELECT
+                product_id,
+                SUM(stock_level) AS current_stock,
+                MAX(last_restocked) AS last_restocked
+            FROM inventory
+            GROUP BY product_id
+        ),
+        sales_summary AS (
+            SELECT
+                oi.product_id,
+                SUM(oi.quantity) AS units_sold_30_days,
+                ROUND(SUM(oi.quantity) / 30.0, 2) AS daily_sales,
+                COUNT(DISTINCT oi.order_id) AS orders_30_days
+            FROM order_items oi
+            JOIN orders o
+                ON o.id = oi.order_id
+            WHERE o.status = 'delivered'
+              AND o.order_date >= CURRENT_DATE - INTERVAL '30 days'
+            GROUP BY oi.product_id
+        ),
+        warehouse_summary AS (
+            SELECT
+                product_id,
+                COUNT(DISTINCT warehouse_id) AS warehouse_count
+            FROM inventory
+            GROUP BY product_id
+        )
+        SELECT
+            p.name AS product_name,
+            ROUND(
+                COALESCE(i.current_stock,0) /
+                NULLIF(s.daily_sales,0),
+                1
+            ) AS days_remaining,
+            CASE
+                WHEN s.daily_sales IS NULL THEN 0
+                WHEN (
+                    COALESCE(i.current_stock,0) /
+                    NULLIF(s.daily_sales,0)
+                ) <= 7 THEN 1
+                ELSE 0
+            END AS stockout_risk,
+            -- predicted income = daily_units * unit_price * days_remaining
+            ROUND(
+                COALESCE(s.daily_sales,0) * COALESCE(p.unit_price,0) *
+                COALESCE(
+                    ROUND(
+                        COALESCE(i.current_stock,0) / NULLIF(s.daily_sales,0),
+                        1
+                    ),
+                    0
+                ),
+                2
+            ) AS predicted_income
+        FROM products p
+        LEFT JOIN inventory_summary i
+            ON p.id = i.product_id
+        LEFT JOIN sales_summary s
+            ON p.id = s.product_id
+        LEFT JOIN warehouse_summary w
+            ON p.id = w.product_id
+        ORDER BY stockout_risk DESC, days_remaining;
+    """)
+    data = curr.fetchall()
+    curr.close()
+    con.close()
+    return data
+
+
 def discontinued_with_remaining_stock():
     con = get_connection()
     curr = con.cursor()

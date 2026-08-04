@@ -1,5 +1,6 @@
 from models.demand_forecast import demand_forecast_model
 from components.db import product_weekly_sales
+from models.stockout_insights import get_stockout_insights_df
 import streamlit as st
 
 import pandas as pd
@@ -50,3 +51,16 @@ def predictive_page():
         use_container_width=True,
         hide_index=True,
     )
+
+    st.divider()
+
+    # --- Stockout risk insights (only show product name, days_remaining, stockout_risk) ---
+    st.subheader("Stockout Risk — Days Remaining & Risk Flag")
+    stock_df = get_stockout_insights_df()
+    display_df = stock_df[["product_name", "days_remaining", "stockout_risk"]]
+    display_df = display_df.sort_values(by=["stockout_risk", "days_remaining"], ascending=[False, True])
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
+
+    # Predicted income from the same query
+    predicted_income_at_risk = stock_df.loc[stock_df["stockout_risk"] == 1, "predicted_income"].sum()
+    st.metric("Predicted Income At Risk (stockout)", f"${predicted_income_at_risk:,.2f}")

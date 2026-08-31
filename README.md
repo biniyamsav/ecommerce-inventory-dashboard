@@ -105,4 +105,4 @@ streamlit run app.py
 
 ## Author
 
-Your Name — [GitHub](https://github.com/yourusername) · [LinkedIn](https://linkedin.com/in/yourprofile)
+Your Name — [GitHub](https://github.com/biniyamsav) · [LinkedIn](linkedin.com/in/biniyam-worku-663a1432b)
